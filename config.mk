@@ -1,0 +1,5 @@
+CC=gcc
+INCLUDE_DIR=include
+SRC_DIR=src
+BUILD_DIR=bin
+FLAGS=-I$(INCLUDE_DIR)
