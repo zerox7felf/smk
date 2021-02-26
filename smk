@@ -22,49 +22,51 @@ while true do
     if not line then break end
     lineCount = lineCount + 1
 
-    local split = line:find(":")
-    if not split then error("Expected field separator on line "..lineCount) end
-    
-    local fieldSection = line:match("^[^:]+:")
-    if not fieldSection then error("Expected object/executable name on line "..lineCount) end
-    fieldSection = fieldSection:sub(1,-2)
+    if line ~= "" then
+        local split = line:find(":")
+        if not split then error("Expected field separator on line "..lineCount) end
+        
+        local fieldSection = line:match("^[^:]+:")
+        if not fieldSection then error("Expected object/executable name on line "..lineCount) end
+        fieldSection = fieldSection:sub(1,-2)
 
-    local fieldSpec = { isExec = false, name = "" }
-    for token in fieldSection:gmatch("[^%s]+") do
-        if token == "exec" then
-            fieldSpec.isExec = true
-        else
-            fieldSpec.name = token
-            break
+        local fieldSpec = { isExec = false, name = "" }
+        for token in fieldSection:gmatch("[^%s]+") do
+            if token == "exec" then
+                fieldSpec.isExec = true
+            else
+                fieldSpec.name = token
+                break
+            end
         end
-    end
-    if not fieldSpec.name then error("Expected object/executable name on line "..lineCount) end
+        if not fieldSpec.name then error("Expected object/executable name on line "..lineCount) end
 
-    (fieldSpec.isExec and executables or objects)[fieldSpec.name] = {
-        files = {}, heads = {}, objs = {}
-    }
+        (fieldSpec.isExec and executables or objects)[fieldSpec.name] = {
+            files = {}, heads = {}, objs = {}
+        }
 
-    local numDeps = 0
-    for dep in line:sub(split+1):gmatch("[^%s]+") do
-        numDeps = numDeps + 1
-        if dep:sub(1,1) == "$" then
-            table.insert(
-                (fieldSpec.isExec and executables or objects)[fieldSpec.name].objs,
-                dep:sub(2)
-            )
-        elseif dep:match("%(.+%)") then
-            table.insert(
-                (fieldSpec.isExec and executables or objects)[fieldSpec.name].heads,
-                dep:sub(2,-2)
-            )
-        else
-            table.insert(
-                (fieldSpec.isExec and executables or objects)[fieldSpec.name].files,
-                dep
-            )
+        local numDeps = 0
+        for dep in line:sub(split+1):gmatch("[^%s]+") do
+            numDeps = numDeps + 1
+            if dep:sub(1,1) == "$" then
+                table.insert(
+                    (fieldSpec.isExec and executables or objects)[fieldSpec.name].objs,
+                    dep:sub(2)
+                )
+            elseif dep:match("%(.+%)") then
+                table.insert(
+                    (fieldSpec.isExec and executables or objects)[fieldSpec.name].heads,
+                    dep:sub(2,-2)
+                )
+            else
+                table.insert(
+                    (fieldSpec.isExec and executables or objects)[fieldSpec.name].files,
+                    dep
+                )
+            end
         end
+        if numDeps == 0 then error("Expected dependencies on line "..lineCount) end
     end
-    if numDeps == 0 then error("Expected dependencies on line "..lineCount) end
 end
 entries:close()
 
