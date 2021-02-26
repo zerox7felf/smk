@@ -85,7 +85,7 @@ end
 local output = io.open(args[2], "w")
 if not output then error("Unable to open output file") end
 
-output:write("import "..confName.."\n")
+output:write("include "..confName.."\n")
 
 for obj, deps in pairs(objects) do
     objString = "$(BUILD_DIR)/"..obj..".o: "
@@ -112,7 +112,7 @@ end
 
 for obj, deps in pairs(executables) do
     objString = "$(BUILD_DIR)/"..obj..": "
-    buildString = "\t$(CC) -c "
+    buildString = "\t$(CC) "
 
     for _,file in pairs(deps.files) do
         buildString = buildString.."$(SRC_DIR)/"..file.." "
