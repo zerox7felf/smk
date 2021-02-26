@@ -19,7 +19,7 @@ containing specifications of header directories, compiler flags, etc. An alterna
 
 The contents of the default config.mk file, an example smk file and its generated makefile can all be found in the repo.
 
-## Installation :##
+## Installation: ##
 Requires a working lua installation (5.1+) and placement somewhere on a storage device of choice from where you can execute it.
 
 ## Todo: ##
